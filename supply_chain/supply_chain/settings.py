@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'rest_framework',  # For API endpoints
     'rest_framework.authtoken',  # Token authentication
     'rest_framework_simplejwt',# JWT
-    'integration'
+    'integration',
+    'channels',
+    'corsheaders',  # Add this
 ]
 
 MIDDLEWARE = [
@@ -57,6 +59,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Add this first
+    'django.middleware.common.CommonMiddleware',  # Add this after corsheaders
+    
 ]
 
 ROOT_URLCONF = 'supply_chain.urls'
@@ -155,3 +160,21 @@ SIMPLE_JWT = {
 
 KAFKA_BROKER_URL = 'localhost:9092'  # Update if the broker is running on a different host/port
 KAFKA_TOPIC = 'test-topic'          # The topic your app will use
+
+# Set the ASGI application to handle WebSocket connections
+ASGI_APPLICATION = 'supply_chain.asgi.application'
+
+# Use the in-memory channel layer (for small-scale apps or development)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Your frontend URL
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True

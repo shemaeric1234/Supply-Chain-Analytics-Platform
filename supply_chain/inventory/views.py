@@ -23,3 +23,18 @@ class ProductViewSet(ModelViewSet):
             {"message": "Product deleted successfully"},
             status=status.HTTP_200_OK  # Use 200 OK if returning a response body
         )
+    
+    def patch(self, request, pk):
+        """
+        Handle partial update of a product.
+        """
+        try:
+            product = Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ProductSerializer(product, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

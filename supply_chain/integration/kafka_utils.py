@@ -1,5 +1,8 @@
 from kafka import KafkaProducer, KafkaConsumer
 import time
+import json
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 def get_kafka_producer():
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
@@ -16,8 +19,24 @@ def get_kafka_consumer(topic, group_id):
 
 def send_kafka_message(topic, message):
     producer = get_kafka_producer()
-    producer.send(topic, message.encode('utf-8'))
+    # producer.send(topic, message.encode('utf-8'))
+    # producer.flush()
+    # Serialize the message dictionary into JSON format
+    serialized_message = json.dumps(message).encode('utf-8')
+    producer.send(topic, serialized_message)
     producer.flush()
+
+        # Notify WebSocket group
+    channel_layer = get_channel_layer()
+
+    async_to_sync(channel_layer.group_send)(
+              
+        "kafka_kafka_orders",  # Replace with your group name
+        {
+            "type": "receive",  # Match with the WebSocket consumer handler
+            "message": message,  # Pass the original message
+        }
+    )
 
 def consume_kafka_messages(topic, group_id, max_messages=10, timeout=5):
     """
@@ -47,6 +66,7 @@ def consume_kafka_messages(topic, group_id, max_messages=10, timeout=5):
         if message:
             for topic_partition, msgs in message.items():
                 for msg in msgs:
+                   
                     messages.append(msg.value.decode('utf-8'))
                     print(f"Received: {msg.value.decode('utf-8')}")
                     count += 1

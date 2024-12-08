@@ -19,8 +19,10 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from inventory.views import ProductViewSet
 from orders.views import OrderViewSet
-from analytics.views import DashboardView
-from integration.views import send_kafka_messages,consume_kafka_messages_view
+from analytics.views import DashboardView,user_order_analysis
+from integration.views import send_kafka_messages,consume_kafka_messages_view,mapreduce_results_view,upload_to_hdfs,read_file_from_hdfs
+from integration.consumers import  KafkaConsumer
+
 
 
 router = DefaultRouter()
@@ -30,8 +32,14 @@ router.register(r'orders', OrderViewSet, basename='orders')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/', include(router.urls)),
     path('users/', include('users.urls')),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('analytics/', user_order_analysis, name='dashboard'),
     path('send-kafka-message/', send_kafka_messages, name='send_kafka_message'),
     path('consume/<str:topic>/', consume_kafka_messages_view, name='consume_kafka_messages_view'),
+    path('mapreduce/results/', mapreduce_results_view, name='mapreduce_results'),
+    path('upload_to_hdfs/', upload_to_hdfs, name='upload_to_hdfs'),
+    path('read_file_from_hdfs/', upload_to_hdfs, name='read_file_from_hdfs'),
+    path('ws/kafka/', KafkaConsumer.as_asgi(), name='ws/kafka/'),
 ]

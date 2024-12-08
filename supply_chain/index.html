@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kafka Producer and Consumer</title>
+  </head>
+  <body>
+    <h1>Send Kafka Message</h1>
+    <form id="kafkaForm">
+      <label for="topic">Kafka Topic:</label>
+      <input type="text" id="topic" name="topic" required />
+      <br />
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" required></textarea>
+      <br />
+      <button type="submit">Send Message</button>
+    </form>
+
+    <h2>Received Messages:</h2>
+    <ul id="messageList"></ul>
+
+    <script>
+      const socket = new WebSocket("ws://localhost:8000/ws/kafka/");
+
+      socket.onopen = function (event) {
+        console.log("Connected to WebSocket!");
+      };
+
+      socket.onmessage = function (event) {
+        const response = JSON.parse(event.data);
+        const message = response.message;
+
+        // Display the received message in real-time
+        const li = document.createElement("li");
+        li.textContent = message;
+        document.getElementById("messageList").appendChild(li);
+      };
+
+      document
+        .getElementById("kafkaForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const topic = document.getElementById("topic").value;
+          // const message = document.getElementById("message").value;
+          const message = {
+            quantity: 1,
+            is_purchase: true,
+            product: 6,
+            user: 2,
+          };
+
+          // Send Kafka message to WebSocket server
+          socket.send(JSON.stringify({ topic: topic, message: message }));
+        });
+    </script>
+  </body>
+</html>

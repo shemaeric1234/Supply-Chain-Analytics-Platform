@@ -43,6 +43,8 @@ class LoginView(APIView):
 
 
 class SignupView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         # Get user data from request
         serializer = UserSerializer(data=request.data)

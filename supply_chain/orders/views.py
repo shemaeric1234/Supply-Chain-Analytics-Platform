@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 from .models import Order, Product
 from .serializers import OrderSerializer
 
@@ -27,9 +28,9 @@ class OrderViewSet(ModelViewSet):
             product = Product.objects.get(id=product_id)
 
             # Check if the requested quantity is greater than the available stock
-            if quantity > product.stock:
+            if quantity > product.quantity:
                 return Response(
-                    {"error": "Insufficient stock. Available stock is " + str(product.stock)},
+                    {"error": "Insufficient stock. Available stock is " + str(product.quantity)},
                     status=status.HTTP_400_BAD_REQUEST
                 )
         except Product.DoesNotExist:

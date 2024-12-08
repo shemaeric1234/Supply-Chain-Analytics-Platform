@@ -104,3 +104,26 @@ This project represents a transformative solution for businesses seeking to opti
 - Hadoop
 - Kafka
 - MySQL
+
+
+## Steps to run this project
+
+### Running backend:
+
+1. Clone repository
+2. Run this command in the terminal  `CD Supply-Chain-Analytics-Platform`
+3. Run Hadoop: Open Hadoop folder by running this command `CD hadoop`  then  run this command to build image `docker compose -f docker-compose-hadoop.yml build` after start the container by running `docker compose -f docker-compose-hadoop.yml up -d`
+4. Run Kafka:Open kafka-docker folder by running this command `CD kafka-docker`  then run this command to build image `docker compose -f docker-compose-kafka.yml build` after start the container by running `docker compose -f docker-compose-kafka.yml up -d`
+5. Open **supply_chain** folder and activate the environment by running this command in the terminal `source venv/bin/activate`
+6. Install all dependencies by running this command in the terminal: `pip install -r requirements.txt`
+7. Run `python manage.py makemigrations`
+8. Run `python manage.py migrate`
+9. Create a superuser by running `python manage.py createsuperuser`
+10. Run `python manage.py runserver`
+
+## Running front end:
+
+1. Open `supply-chain-frontEnd` folder
+2. In the terminal run `yarn install`
+3. Run `npm run dev`
+4. Then open the front-end app through this link `http://localhost:5173/`
